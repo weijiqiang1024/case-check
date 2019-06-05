@@ -1,12 +1,17 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
+    <a-button type="primary">primary</a-button>
   </div>
 </template>
 
 <script>
+// import {Button} from 'ant-design-vue';
 export default {
   name: 'HelloWorld',
+  // components:{
+  //   AButton:Button
+  // },
   props: {
     msg: String
   }

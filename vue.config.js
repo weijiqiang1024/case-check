@@ -6,7 +6,6 @@
  * @Last Modified by: weijq@cychina.cn (韦继强)
  * @Last Modified time: 2019-06-05 20:19:38
  * @Version:V1.0 
- * Company: 合肥安慧软件有限公司 
  * Copyright: Copyright (c) 2019' 
  */
 

@@ -21,7 +21,7 @@
         <a-form-item>
           <a-input
             v-decorator="[
-          'note',
+          'username',
           {rules: [{ required: true, message: 'Please input your note!' }]}
         ]"
           >
@@ -31,7 +31,7 @@
         <a-form-item>
           <a-input
             v-decorator="[
-          'note',
+          'password',
           {rules: [{ required: true, message: 'Please input your note!' }]}
         ]"
           >

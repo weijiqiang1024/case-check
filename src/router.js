@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强)
  * @Date: 2019-06-09 20:57:52
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-10 23:41:59
+ * @Last Modified time: 2019-06-11 16:25:44
  * @Version:V1.0
  * Copyright: Copyright (c) 2017'
  */
@@ -37,7 +37,7 @@ const router = new Router({
         //dashboard
         {
           path: "/",
-          redirect: "/dashboard/annlysis"
+          redirect: "/login"
         },
         {
           path: "/dashboard",
@@ -49,23 +49,33 @@ const router = new Router({
               path: "/dashboard/annlysis",
               name: "annlysis",
               meta: { title: "仪表盘页", auth: [] },
-              component: () =>
-                import(/* webpackChunkName: "dashboard" */ "@/views/Home")
+              component: () => import(/* webpackChunkName: "dashboard" */ "@/views/Home")
+            },
+            {
+              path: "/dashboard/form",
+              name: "form",
+              meta: { title: "表单页", auth: [] },
+              component: () => import(/* webpackChunkName: "dashboard" */ "@/views/About")
             }
           ]
         },
         {
           path: "/user",
           name: "user",
-          meta: { title: "系统用户", icon: "dashboard", auth: [] },
+          meta: { title: "系统用户", icon: "setting", auth: [] },
           component: RouteView,
           children: [
             {
               path: "/user/users",
               name: "users",
               meta: { title: "用户管理", auth: [" "] },
-              component: () =>
-                import(/* webpackChunkName: "user" */ "@/views/user/Users")
+              component: () => import(/* webpackChunkName: "user" */ "@/views/user/Users")
+            },
+            {
+              path: "/user/syscode",
+              name: "syscode",
+              meta: { title: "系统代码", auth: [" "] },
+              component: () => import(/* webpackChunkName: "user" */ "@/views/user/SysCode")
             }
           ]
         }

@@ -9,9 +9,10 @@
       <a-menu-item
         v-if="!item.children"
         :key="item.path"
+        @click="() => parent.$router.push({path:item.path,query:parent.$router.query})"
       >
-        <a-icon type="pie-chart" />
-        <span>{{ item.title }}</span>
+        <a-icon v-if="item.meta.icon" :type="item.meta.icon" />
+        <span>{{ item.meta.title }}</span>
       </a-menu-item>
       <sub-menu
         v-else
@@ -24,5 +25,20 @@
 <script>
 export default {
   props: ['menuInfo'],
+  data(){
+    return {}
+  },
+  created(){
+    debugger;
+    console.log(this.menuInfo,9999);
+  },
+  mounted:{
+    // console.log(this)
+  },
+  watch:{
+    "menuInfo":function(val){
+      console.log(val,1111);
+    }
+  }
 };
 </script>

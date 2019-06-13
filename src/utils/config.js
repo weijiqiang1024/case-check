@@ -11,9 +11,9 @@
 
 const G = window.g;
 //后台地址
-let defaultUrl = 'http://192.168.10.150:9800';
+let defaultUrl = 'http://192.168.10.116:8080';
 //模板下载地址
-// let approveBill_downLoad = "http://192.168.10.150:8000/muban/业务申请模板.xlsx";
+let approveBill_downLoad = "http://192.168.10.150:8000/muban/业务申请模板.xlsx";
 export let config = {
 	baseURL: G ? G.url || defaultUrl : defaultUrl,
 	// transformRequest: [function (data) {

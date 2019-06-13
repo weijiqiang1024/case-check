@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-09 21:08:10 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-10 14:54:50
+ * @Last Modified time: 2019-06-13 17:10:25
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -51,6 +51,7 @@
  
  <script>
 import logo from "@/assets/jinghui.png";
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -60,16 +61,24 @@ export default {
     };
   },
   methods: {
+    ...mapActions({login:"user/login", logout:"user/logout"}),
     handleSubmit(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {
-          console.log("Received values of form: ", values);
           //登录成功跳转
-          this.$store.dispatch('user/login',values);
-          this.$router.push({ name: "annlysis" });
+          this.login(values)
+            .then(res => this.loginSuccess(res))
+            .catch(err => this.loginFailed(err))
         }
       });
+    },
+    loginSuccess(res) {
+      console.log(res + " res");
+      this.$router.push({ name: "annlysis" });
+    },
+    loginFailed(err) {
+      console.log(err + " err");
     }
   }
 };

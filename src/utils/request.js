@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-12 16:34:49 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-12 17:43:08
+ * @Last Modified time: 2019-06-13 18:10:45
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -20,6 +20,10 @@ axios.interceptors.request.use(
         // 即使本地存在token，也有可能token是过期的，所以在响应拦截器中要对返回状态进行判断
         const token = store.state.token;
         token && (config.headers.Authorization = token);
+
+        // if(config.method == "post"){//序列化
+        //     config.data = qs.stringify(config.data);
+        // }
         return config;
     },
     error => {
@@ -29,12 +33,12 @@ axios.interceptors.request.use(
 const username = localStorage.getItem(username);
 
 const request = {
-    post: (params) => {
-        for (let key in params.reqParam) {
-            params.reqParam[key] = params.reqParam[key] ? params.reqParam[key] : "";
-        }
-        let url = params.reqUrl + "?username=" + username;
-        return axios.post(url, params.reqParam, config)
+    post: (url, params) => {
+        // for (let key in params.reqParam) {
+        //     params.reqParam[key] = params.reqParam[key] ? params.reqParam[key] : "";
+        // }
+        // let reqUrl = url + "?username=" + username;
+        return axios.post(url, params, config)
             .then(res => {
                 return res;
             })
@@ -48,12 +52,12 @@ const request = {
             })
     },
 
-    get: (params) => {
-        for (let key in params.reqParam) {
-            params.reqParam[key] = params.reqParam[key] ? params.reqParam[key] : "";
-        }
-        let url = params.reqUrl + "?username=" + username;
-        return axios.get(url, params.reqParam, config)
+    get: (url, params) => {
+        // for (let key in params.reqParam) {
+        //     params.reqParam[key] = params.reqParam[key] ? params.reqParam[key] : "";
+        // }
+        let reqUrl = url + "?username=" + username;
+        return axios.get(reqUrl, params.reqParam, config)
             .then(res => {
                 return res;
             })

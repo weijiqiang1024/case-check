@@ -10,7 +10,7 @@
  */
 
  const api = {
-    login: '/auth/login',   //系统登录接口
+    login: '/CaseManage/login/login',   //系统登录接口
     logout: '/auth/logout',
     userList:'/user/list',  //用户列表
     userInfo: '/user/info',

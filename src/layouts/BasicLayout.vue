@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-10 15:07:19 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-10 17:02:18
+ * @Last Modified time: 2019-06-13 18:55:13
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -75,5 +75,8 @@ export default {
 
 .header{
     float: right;
+    position: relative;
+    height: 100%;
+    padding:0 12px 0 0;
 }
 </style>

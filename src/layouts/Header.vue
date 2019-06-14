@@ -5,9 +5,15 @@
       <span class="username">{{username}}</span>
       <div class="settingPanel">
         <ul>
-          <li>个人中心</li>
-          <li>账户设置</li>
-          <li>退 出</li>
+          <li>
+            <a-icon type="user"/>&nbsp;个人中心
+          </li>
+          <li>
+            <a-icon type="setting"/>&nbsp;账户设置
+          </li>
+          <li @click="logoutHandler">
+            <a-icon type="logout"/>&nbsp;退出登陆
+          </li>
         </ul>
       </div>
     </div>
@@ -16,14 +22,38 @@
 
 <script>
 import { Avatar } from "ant-design-vue";
+import { mapActions } from "vuex";
 export default {
   components: {
     "a-avatar": Avatar
   },
   data() {
+    debugger;
+    let userInfo = JSON.parse(sessionStorage.getItem("user_info") || "{}");
     return {
-      username: "魔法喵咪"
+      username: userInfo && userInfo.username || '猫咪'
     };
+  },
+  mounted(){
+    // console.log(this.$store.state.user,'user');
+  },
+  methods: {
+    ...mapActions({
+      logout: "user/logout"
+    }),
+    logoutHandler() {
+      // debugger;
+      this.logout()
+        .then(res => this.logoutSuccess(res))
+        .catch(err => this.logoutFailed(err));
+    },
+    logoutSuccess(res) {
+      console.log(res);
+      this.$router.push({ name: "login" });
+    },
+    logoutFailed(err) {
+      console.log(err);
+    }
   }
 };
 </script>
@@ -49,7 +79,7 @@ export default {
 
     .settingPanel {
       visibility: visible;
-      transition: all 0.3s ease-out;
+      transition: all 0.3s ease;
     }
   }
 
@@ -59,7 +89,7 @@ export default {
     position: absolute;
     top: 68px;
     right: 0;
-    width: 120px;
+    width: 160px;
     list-style-type: none;
     padding: 4px 0;
     margin: 0;
@@ -70,20 +100,41 @@ export default {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     background-clip: padding-box;
     -webkit-transform: translateZ(0);
-    transition: all 0.3s ease-out;
+    transition: all 0.3s ease;
+    //animation: name duration timing-function delay iteration-count direction fill-mode;
 
     &:hover {
       visibility: visible;
+      transition: all 0.3s ease;
+      // -webkit-animation-name: fadeInDown;
+      // animation-name: fadeInDown;
     }
-  }
-}
 
-@keyframes show-gradient {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(0);
+    ul {
+      padding: 4px 0px;
+      margin-block-end: 0px;
+      list-style: none;
+    }
+
+    li {
+      width: 160px;
+      padding: 4px 12px;
+      margin: 0;
+      clear: both;
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(0, 0, 0, 0.65);
+      white-space: nowrap;
+      cursor: pointer;
+      // -webkit-transition: all 0.3s;
+      // transition: all 0.3s;
+      line-height: 22px;
+
+      &:hover {
+        color: #1890ff;
+        background: #e6f7ff;
+      }
+    }
   }
 }
 </style>

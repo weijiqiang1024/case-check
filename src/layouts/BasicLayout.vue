@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-10 15:07:19 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-13 18:55:13
+ * @Last Modified time: 2019-06-14 19:14:17
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -13,7 +13,10 @@
   <div>
     <a-layout id="components-layout-demo-side" style="min-height: 100vh">
       <a-layout-sider :trigger="null" collapsible v-model="collapsed" width="256px">
-        <div class="logo"/>
+        <div class="logo">
+          <img :src="jinghui" alt class="logoImg">
+          <span class="sysName">案件核查平台</span>
+        </div>
         <SiderMenu/>
       </a-layout-sider>
       <a-layout>
@@ -40,6 +43,7 @@
 import Header from "./Header";
 import Footer from "./Footer";
 import SiderMenu from "./SiderMenu";
+import jinghui from "@/assets/jinghui.png";
 export default {
   components: {
     Header,
@@ -48,13 +52,14 @@ export default {
   },
   data() {
     return {
-      collapsed: false
+      collapsed: false,
+      jinghui: jinghui
     };
   }
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .trigger {
   font-size: 18px;
   line-height: 64px;
@@ -68,15 +73,38 @@ export default {
 }
 
 .logo {
-  height: 32px;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 16px;
+  position: relative;
+  height: 64px;
+  padding-left: 16px;
+  overflow: hidden;
+  line-height: 64px;
+  background: #002140;
+  -webkit-transition: all 0.3s;
+  transition: all 0.3s;
+
+  .logoImg {
+    display: inline-block;
+    height: 46px;
+    width: 46px;
+    transform: translateY(-4px);
+  }
+
+  .sysName {
+    display: inline-block;
+    color: #fff;
+    font-size: 24px;
+    margin: 0 0 0 12px;
+    font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    vertical-align: middle;
+    letter-spacing: 2px;
+  }
 }
 
-.header{
-    float: right;
-    position: relative;
-    height: 100%;
-    padding:0 12px 0 0;
+.header {
+  float: right;
+  position: relative;
+  height: 100%;
+  padding: 0 12px 0 0;
 }
 </style>

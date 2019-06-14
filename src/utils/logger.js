@@ -5,7 +5,8 @@ import _ from "lodash";
 
 export default function createLogger ({
   collapsed = true,
-  filter = (mutation, stateBefore, stateAfter) => true,
+  // filter = (mutation, stateBefore, stateAfter) => true,
+  filter = () => true,
   transformer = state => state,
   mutationTransformer = mut => mut,
   logger = console

@@ -3,7 +3,7 @@ import App from './App.vue'
 import router from '@/router'
 import Storage from 'vue-ls'
 import store from '@/store/index'
-import {Button,Form,Input,Icon,Layout,Menu} from 'ant-design-vue'
+import {Button,Form,Input,Icon,Layout,Menu,Table,Col,Row} from 'ant-design-vue'
 import { storageOptions } from '@/utils/default'
 
 Vue.config.productionTip = false
@@ -15,6 +15,9 @@ Vue.use(Input)
 Vue.use(Icon)
 Vue.use(Layout)
 Vue.use(Menu)
+Vue.use(Table)
+Vue.use(Col)
+Vue.use(Row)
 new Vue({
   router,
   store,

@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强)
  * @Date: 2019-06-09 20:57:52
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-14 11:15:54
+ * @Last Modified time: 2019-06-15 15:41:39
  * @Version:V1.0
  * Copyright: Copyright (c) 2017'
  */
@@ -76,6 +76,12 @@ const router = new Router({
               component: () => import(/* webpackChunkName: "user" */ "@/views/user/Users")
             },
             {
+              path: "/user/orgs",
+              name: "orgs",
+              meta: { title: "组织机构" },
+              component: () => import(/* webpackChunkName: "user" */ "@/views/user/org")
+            },
+            {
               path: "/user/syscode",
               name: "syscode",
               meta: { title: "系统代码" },
@@ -109,7 +115,7 @@ router.beforeEach((to, from, next) => {
   }
   //权限判断
   const record = _.findLast(to.matched, record => record.meta.auth);
-  debugger;
+  
   if (record && !checkAuth(record.meta.auth)) {
     if (!loginCheck() && to.path != "/login") {
       next({

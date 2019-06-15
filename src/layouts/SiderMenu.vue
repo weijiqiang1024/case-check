@@ -3,8 +3,8 @@
  * @Description: Todo 
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-11 18:27:00 
- * @Last Modified by: weijq@cychina.cn (韦继强) 
- * @Last Modified time: 2019-06-14 18:27:00 
+ * @Last Modified by: weijq@cychina.cn (韦继强)
+ * @Last Modified time: 2019-06-15 14:19:05
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -40,7 +40,7 @@ export default {
     this.selectedKeysMap = {};
     this.openKeysMap = {};
     const menuData = this.getMenuData(this.$router.options.routes);
-    console.log(menuData, 8888);
+    // console.log(menuData, 8888);
     return {
       collapsed: false,
       menuData,
@@ -52,8 +52,8 @@ export default {
     "$route.path": function(val) {
       this.selectedKeys = this.selectedKeysMap[val];
       this.openKeys = this.collapsed ? [] : this.openKeysMap[val];
-      console.log(this.selectedKeysMap, "selectedKeysMap");
-      console.log(this.openKeysMap, "openKeysMap");
+      // console.log(this.selectedKeysMap, "selectedKeysMap");
+      // console.log(this.openKeysMap, "openKeysMap");
     }
   },
   methods: {
@@ -98,5 +98,6 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+
 </style>

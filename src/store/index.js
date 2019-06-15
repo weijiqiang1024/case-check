@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-07 22:53:45 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-14 18:24:38
+ * @Last Modified time: 2019-06-15 14:04:17
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -21,7 +21,7 @@ Vue.use(Vuex)
 const debug = process.env.NODE_ENV !== 'production'
 
 const vuexLocal = new VuexPersistence({
-    storage: window.localStorage
+    storage: window.sessionStorage
 })
 
 export default new Vuex.Store({

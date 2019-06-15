@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-10 15:07:19 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-14 19:14:17
+ * @Last Modified time: 2019-06-15 15:33:13
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -12,14 +12,20 @@
 <template>
   <div>
     <a-layout id="components-layout-demo-side" style="min-height: 100vh">
-      <a-layout-sider :trigger="null" collapsible v-model="collapsed" width="256px">
+      <a-layout-sider
+        :trigger="null"
+        collapsible
+        v-model="collapsed"
+        width="256px"
+        class="siderMenu"
+      >
         <div class="logo">
           <img :src="jinghui" alt class="logoImg">
           <span class="sysName">案件核查平台</span>
         </div>
         <SiderMenu/>
       </a-layout-sider>
-      <a-layout>
+      <a-layout style="position:relative;">
         <a-layout-header style="background: #fff; padding: 0">
           <a-icon
             class="trigger"
@@ -28,12 +34,12 @@
           ></a-icon>
           <Header class="header"/>
         </a-layout-header>
-        <a-layout-content style="margin: 0 16px">
+        <a-layout-content style="margin: 0 16px" class="content">
           <router-view></router-view>
         </a-layout-content>
-        <a-layout-footer style="text-align: center">
+        <!-- <a-layout-footer style="text-align: center">
           <Footer/>
-        </a-layout-footer>
+        </a-layout-footer>-->
       </a-layout>
     </a-layout>
   </div>
@@ -41,13 +47,13 @@
 
 <script>
 import Header from "./Header";
-import Footer from "./Footer";
+// import Footer from "./Footer";
 import SiderMenu from "./SiderMenu";
 import jinghui from "@/assets/jinghui.png";
 export default {
   components: {
     Header,
-    Footer,
+    // Footer,
     SiderMenu
   },
   data() {
@@ -106,5 +112,20 @@ export default {
   position: relative;
   height: 100%;
   padding: 0 12px 0 0;
+}
+
+.siderMenu {
+  -webkit-box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+  box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+}
+
+.content {
+  position: absolute;
+  top: 80px;
+  width: calc(100% - 30px);
+  height: calc(100vh - 94px);
+  background: #fff;
+  padding: 10px;
+  margin: 0 10px;
 }
 </style>

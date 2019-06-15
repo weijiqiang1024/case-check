@@ -28,7 +28,6 @@ export default {
     "a-avatar": Avatar
   },
   data() {
-    debugger;
     let userInfo = JSON.parse(sessionStorage.getItem("user_info") || "{}");
     return {
       username: userInfo && userInfo.username || '猫咪'
@@ -96,6 +95,7 @@ export default {
     text-align: left;
     background-color: #fff;
     border-radius: 4px;
+    z-index: 3;
     -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     background-clip: padding-box;

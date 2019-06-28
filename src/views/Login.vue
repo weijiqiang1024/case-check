@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-09 21:08:10 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-13 17:10:25
+ * @Last Modified time: 2019-06-27 09:50:26
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -22,7 +22,7 @@
           <a-input
             v-decorator="[
           'username',
-          {rules: [{ required: true, message: 'Please input your note!' }]}
+          {rules: [{ required: true, message: '请输入用户名!' }]}
         ]"
           >
             <a-icon slot="prefix" type="user" style="color:rgba(0,0,0,.25)"/>
@@ -32,14 +32,15 @@
           <a-input
             v-decorator="[
           'password',
-          {rules: [{ required: true, message: 'Please input your note!' }]}
+          {rules: [{ required: true, message: '请输入密码!' }]}
         ]"
+        type="password"
           >
             <a-icon slot="prefix" type="lock" style="color:rgba(0,0,0,.25)"/>
           </a-input>
         </a-form-item>
         <a-form-item>
-          <a-button type="primary" html-type="submit" class="loginFormButton">登 录</a-button>
+          <a-button type="primary" html-type="submit" class="loginFormButton" :loading="loading">登 录</a-button>
         </a-form-item>
       </a-form>
     </content>
@@ -57,28 +58,33 @@ export default {
     return {
       formLayout: "horizontal",
       form: this.$form.createForm(this),
-      imglogo: logo
+      imglogo: logo,
+      loading: false
     };
   },
   methods: {
-    ...mapActions({login:"user/login", logout:"user/logout"}),
+    ...mapActions({
+      login: "user/login",
+      logout: "user/logout",
+      getOrgTree: "org/getOrgTree",
+      getSysCode: "syscode/getList"
+    }),
     handleSubmit(e) {
       e.preventDefault();
       this.form.validateFields((err, values) => {
         if (!err) {
+          this.loading = true;
           //登录成功跳转
           this.login(values)
-            .then(res => this.loginSuccess(res))
-            .catch(err => this.loginFailed(err))
+            .then(res => {
+              this.getOrgTree();
+              this.getSysCode();
+              this.$message.success(res.msg);
+              this.$router.push({ name: "annlysis" });
+            })
+            .finally(() => (this.loading = false));
         }
       });
-    },
-    loginSuccess(res) {
-      console.log(res + " res");
-      this.$router.push({ name: "annlysis" });
-    },
-    loginFailed(err) {
-      console.log(err + " err");
     }
   }
 };

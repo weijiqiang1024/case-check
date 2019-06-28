@@ -1,0 +1,66 @@
+//公共样式 weijq 20/6/2019
+@mixin layout($treeAreaWidth:0%, $mainAreaWidth:100%) {
+    ._main_page {
+        display: flex;
+        position: relative;
+        height: 100%;
+        .treeInfo {
+            width: $treeAreaWidth;
+            .treeNameArea {
+                width: 100%;
+                line-height: 34px;
+                height: 34px;
+                background: #f9f9f9;
+                letter-spacing: 2px;
+                color: rgba(0, 0, 0, 0.6);
+                font-weight: 700;
+                text-align: center;
+            }
+            .treeArea {
+                position: absolute;
+                width: 20%;
+                height: calc(100vh - 144px);
+                overflow: auto;
+                border: 1px solid #f0f2f5;
+                .orgTreeDiv {
+                    padding: 4px 10px;
+                }
+            }
+        }
+        .mainArea {
+            position: absolute;
+            left: 100% - $mainAreaWidth + 1%;
+            width: $mainAreaWidth - 1%;
+            height: calc(100vh - 114px);
+            @if $treeAreaWidth==(20%) {
+                left: 100% - $mainAreaWidth + 1%;
+            }
+            @else if $treeAreaWidth==(0%) {
+                left: 0.5%;
+            }
+        }
+        .searchArea {
+            width: 100%;
+            padding: 10px 10px;
+            border: 1px solid #f0f2f5;
+            overflow: hidden;
+        }
+        .tableArea {
+            position: absolute;
+            width: 100%;
+            margin-top: 14px;
+            .buttonArea {
+                position: absolute;
+                right: 10px;
+                .addBtn {
+                    margin-right: 10px;
+                }
+            }
+            .tableInfo {
+                position: absolute;
+                width: 100%;
+                top: 36px;
+            }
+        }
+    }
+}

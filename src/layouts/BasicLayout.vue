@@ -4,14 +4,14 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-10 15:07:19 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-15 15:33:13
+ * @Last Modified time: 2019-06-27 11:54:15
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
 
 <template>
   <div>
-    <a-layout id="components-layout-demo-side" style="min-height: 100vh">
+    <a-layout id="components-layout-demo-side" class="aLayout">
       <a-layout-sider
         :trigger="null"
         collapsible
@@ -25,21 +25,24 @@
         </div>
         <SiderMenu/>
       </a-layout-sider>
-      <a-layout style="position:relative;">
-        <a-layout-header style="background: #fff; padding: 0">
-          <a-icon
-            class="trigger"
-            :type="collapsed ? 'menu-unfold' : 'menu-fold'"
-            @click="()=> collapsed = !collapsed"
-          ></a-icon>
-          <Header class="header"/>
-        </a-layout-header>
-        <a-layout-content style="margin: 0 16px" class="content">
-          <router-view></router-view>
-        </a-layout-content>
-        <!-- <a-layout-footer style="text-align: center">
+      <a-layout>
+        <div class="sectorBack"></div>
+        <div class="mainArea">
+          <a-layout-header class="alHeader">
+            <a-icon
+              class="trigger"
+              :type="collapsed ? 'menu-unfold' : 'menu-fold'"
+              @click="()=> collapsed = !collapsed"
+            ></a-icon>
+            <Header class="header"/>
+          </a-layout-header>
+          <a-layout-content class="content">
+            <router-view></router-view>
+          </a-layout-content>
+          <!-- <a-layout-footer style="text-align: center">
           <Footer/>
-        </a-layout-footer>-->
+          </a-layout-footer>-->
+        </div>
       </a-layout>
     </a-layout>
   </div>
@@ -66,6 +69,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.aLayout {
+  min-height: 100vh;
+}
+
+.mainArea {
+  position: relative;
+}
+
+.alHeader {
+  background: #fff;
+  padding: 0;
+}
 .trigger {
   font-size: 18px;
   line-height: 64px;
@@ -117,6 +132,7 @@ export default {
 .siderMenu {
   -webkit-box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
   box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+  z-index: 1;
 }
 
 .content {
@@ -126,6 +142,17 @@ export default {
   height: calc(100vh - 94px);
   background: #fff;
   padding: 10px;
-  margin: 0 10px;
+  margin: 0 16px;
+  overflow: hidden;
+}
+
+.sectorBack {
+  position: absolute;
+  height: 800px;
+  width: 800px;
+  border-radius: 50%;
+  background-color: rgba(24,144,255,0.2);;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
 }
 </style>

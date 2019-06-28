@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-07 22:53:45 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-15 14:04:17
+ * @Last Modified time: 2019-06-22 11:24:40
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -14,19 +14,23 @@ import Vuex from 'vuex'
 import VuexPersistence from 'vuex-persist'
 import createLogger from "@/utils/logger"
 import getters from './getters'
-import user from './modules/user'
+import user from './modules/system/user'
+import org from './modules/system/org'
+import syscode from './modules/system/syscode'
 
 Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
-
+//数据持久化
 const vuexLocal = new VuexPersistence({
     storage: window.sessionStorage
 })
 
 export default new Vuex.Store({
     modules: {
-        user
+        user,
+        org,
+        syscode
     },
     state: {
         token: ""

@@ -29,7 +29,6 @@ export default {
     return {}
   },
   created(){
-    debugger;
     console.log(this.menuInfo,9999);
   },
   mounted:{

@@ -1,10 +1,10 @@
 /*
- * @Title: $undefined
+ * @Title: $路由信息
  * @Description: Todo
  * @Author: weijq@cychina.cn (韦继强)
  * @Date: 2019-06-09 20:57:52
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-15 15:41:39
+ * @Last Modified time: 2019-06-28 11:10:03
  * @Version:V1.0
  * Copyright: Copyright (c) 2017'
  */
@@ -14,7 +14,7 @@ import Router from "vue-router";
 import NProgress from "nprogress";
 import _ from "lodash";
 import { RouteView, BasicLayout } from "@/layouts";
-import { notification } from "ant-design-vue";
+import { message } from "ant-design-vue";
 import { checkAuth, loginCheck } from "@/utils/auth";
 // import Home from './views/Home.vue'
 
@@ -31,7 +31,7 @@ const router = new Router({
       hideInMenu: true,
       meta: { title: "登录页", auth: ['admin', 'user'] },
       component: () =>
-        import(/* webpackChunkName: "user" */ "@/views/user/Login")
+        import(/* webpackChunkName: "user" */ "@/views/Login")
     },
     {
       path: "/",
@@ -46,7 +46,7 @@ const router = new Router({
         {
           path: "/dashboard",
           name: "dashboard",
-          meta: { title: "仪表盘", icon: "dashboard", auth: ['admin', 'user'] },
+          meta: { title: "工作台", icon: "dashboard", auth: ['admin', 'user'] },
           component: { render: h => h("router-view") },
           children: [
             {
@@ -64,6 +64,20 @@ const router = new Router({
           ]
         },
         {
+          path: "/case",
+          name: "case",
+          meta: { title: "案件管理", icon: "file-protect", auth: ['admin'] },
+          component: RouteView,
+          children: [
+            {
+              path: "/case/casemanage",
+              name: "casemanage",
+              meta: { title: "案件信息" },
+              component: () => import(/* webpackChunkName: "case" */ "@/views/case/casemanage")
+            }
+          ]
+        },
+        {
           path: "/user",
           name: "user",
           meta: { title: "系统用户", icon: "setting", auth: ['admin'] },
@@ -73,28 +87,35 @@ const router = new Router({
               path: "/user/users",
               name: "users",
               meta: { title: "用户管理" },
-              component: () => import(/* webpackChunkName: "user" */ "@/views/user/Users")
+              component: () => import(/* webpackChunkName: "system" */ "@/views/system/user")
             },
             {
               path: "/user/orgs",
               name: "orgs",
               meta: { title: "组织机构" },
-              component: () => import(/* webpackChunkName: "user" */ "@/views/user/org")
+              component: () => import(/* webpackChunkName: "system" */ "@/views/system/org")
+            },
+            {
+              path: "/user/roles",
+              name: "roles",
+              meta: { title: "角色权限", keepAlive: true },
+              component: () => import(/* webpackChunkName: "system" */ "@/views/system/role")
             },
             {
               path: "/user/syscode",
               name: "syscode",
               meta: { title: "系统代码" },
-              component: () => import(/* webpackChunkName: "user" */ "@/views/user/SysCode")
+              component: () => import(/* webpackChunkName: "system" */ "@/views/system/syscode/index")
+            },
+            {
+              path: "/user/codetype",
+              name: "codetype",
+              meta: { title: "系统代码类型" },
+              component: () => import(/* webpackChunkName: "system" */ "@/views/system/codetype/index")
             }
           ]
         }
       ]
-    },
-    {
-      path: "*",
-      redirect: "/404",
-      hideInMenu: true
     },
     {
       path: "/404",
@@ -105,6 +126,11 @@ const router = new Router({
       path: "/403",
       hideInMenu: true,
       component: () => import(/* webpackChunkName: "fail" */ "@/views/403")
+    },
+    {
+      path: "*",
+      redirect: "/404",
+      hideInMenu: true
     }
   ]
 });
@@ -115,17 +141,14 @@ router.beforeEach((to, from, next) => {
   }
   //权限判断
   const record = _.findLast(to.matched, record => record.meta.auth);
-  
+
   if (record && !checkAuth(record.meta.auth)) {
     if (!loginCheck() && to.path != "/login") {
       next({
         path: "/login"
       })
     } else if (to.path != "/403") {
-      notification.error({
-        message:'403',
-        description:'无权限访问，请联系管理员'
-      })
+      message.error('403 无权限访问，请联系管理员')
       next({
         path: "/403"
       })

@@ -43,7 +43,7 @@
         </div>
         <div class="tableArea">
           <div class="buttonArea">
-            <a-button type="primary" size="small" @click="$refs.addForm.add()" class="addBtn">添加</a-button>
+            <a-button  v-auth="['orgs','add']" type="primary" size="small" @click="$refs.addForm.add()" class="addBtn">添加</a-button>
             <a-popconfirm
               title="确定删除?"
               :visible="visibleTip"
@@ -53,7 +53,7 @@
               okText="确定"
               cancelText="取消"
             >
-              <a-button type="primary" size="small">删除</a-button>
+              <a-button type="primary" size="small"  v-auth="['orgs','delete']">删除</a-button>
             </a-popconfirm>
           </div>
           <div class="tableInfo">
@@ -70,7 +70,7 @@
               <!-- <a slot="name" slot-scope="text" href="javascript:;">{{text}}</a> -->
               <span slot="action" slot-scope="text,record">
                 <template>
-                  <a @click="handleEdit(record)">修改</a>
+                  <a  v-auth="['orgs','update']" @click="handleEdit(record)">修改</a>
                   <a-divider type="vertical"/>
                   <a-popconfirm
                     title="确定删除?"
@@ -79,10 +79,10 @@
                     okText="确定"
                     cancelText="取消"
                   >
-                    <a>删除</a>
+                    <a  v-auth="['orgs','delete']">删除</a>
                   </a-popconfirm>
                   <a-divider type="vertical"/>
-                  <a @click="viewData(record)">查看</a>
+                  <a  v-auth="['orgs','view']" @click="viewData(record)">查看</a>
                 </template>
               </span>
             </a-table>
@@ -241,17 +241,18 @@ export default {
         this.visibleTip = false;
       }
     },
-    handleSearch(e, query = {}) {
+    handleSearch(e, query = {},pagination={}) {
       //机构列表查询方法
       e ? e.preventDefault() : null;
       this.form.validateFields((err, values) => {
         if (!err) {
-          const { current, pageSize } = this.pageShow;
+          let pageNumber = pagination.pageNumber || 1;
+          let pageSize = pagination.pageSize || 10;
           let params = {
             ...query,
             ...values, //[orgCode,orgName]
             pageSize,
-            pageNumber: current,
+            pageNumber,
             
           };
           this.getOrgList(params)
@@ -269,7 +270,7 @@ export default {
       const pager = { ...this.pagination };
       pager.current = pager.pageNumber = pagination.current;
       this.pagination = pager;
-      this.handleSearch(false);
+      this.handleSearch(false,{},this.pagination);
     },
     getOrgTrees(query) {
       //机构树查询

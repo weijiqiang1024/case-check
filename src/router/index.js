@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强)
  * @Date: 2019-06-09 20:57:52
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-28 11:10:03
+ * @Last Modified time: 2019-07-11 14:57:22
  * @Version:V1.0
  * Copyright: Copyright (c) 2017'
  */
@@ -16,7 +16,7 @@ import _ from "lodash";
 import { RouteView, BasicLayout } from "@/layouts";
 import { message } from "ant-design-vue";
 import { checkAuth, loginCheck } from "@/utils/auth";
-// import Home from './views/Home.vue'
+
 
 Vue.use(Router);
 Vue.use(NProgress);
@@ -29,50 +29,45 @@ const router = new Router({
       path: "/login",
       name: "login",
       hideInMenu: true,
-      meta: { title: "登录页", auth: ['admin', 'user'] },
+      meta: { title: "登录页", auth: ['login'] },
       component: () =>
         import(/* webpackChunkName: "user" */ "@/views/Login")
     },
     {
       path: "/",
-      meta: { auth: ['admin', 'user'] },
+      meta: { auth: ['login'] },
       component: BasicLayout,
       children: [
         //dashboard
         {
           path: "/",
+          meta: { title: "登录页", auth: ['login'] },
           redirect: "/login"
         },
         {
           path: "/dashboard",
-          name: "dashboard",
-          meta: { title: "工作台", icon: "dashboard", auth: ['admin', 'user'] },
+          name: "home",
+          meta: { title: "工作台", icon: "dashboard", auth: ['home'] },
           component: { render: h => h("router-view") },
           children: [
             {
               path: "/dashboard/annlysis",
               name: "annlysis",
-              meta: { title: "仪表盘页" },
-              component: () => import(/* webpackChunkName: "dashboard" */ "@/views/Home")
-            },
-            {
-              path: "/dashboard/form",
-              name: "form",
-              meta: { title: "表单页" },
-              component: () => import(/* webpackChunkName: "dashboard" */ "@/views/About")
+              meta: { title: "工作台", auth: ['home'] },
+              component: () => import(/* webpackChunkName: "dashboard" */ "@/views/home/index")
             }
           ]
         },
         {
           path: "/case",
           name: "case",
-          meta: { title: "案件管理", icon: "file-protect", auth: ['admin'] },
+          meta: { title: "案件管理", icon: "file-protect", auth: ['casemanage'] },
           component: RouteView,
           children: [
             {
               path: "/case/casemanage",
               name: "casemanage",
-              meta: { title: "案件信息" },
+              meta: { title: "案件信息", auth: ['casemanage'] },
               component: () => import(/* webpackChunkName: "case" */ "@/views/case/casemanage")
             }
           ]
@@ -80,38 +75,62 @@ const router = new Router({
         {
           path: "/user",
           name: "user",
-          meta: { title: "系统用户", icon: "setting", auth: ['admin'] },
+          meta: { title: "系统用户", icon: "setting", auth: ['users'] },
           component: RouteView,
           children: [
             {
               path: "/user/users",
               name: "users",
-              meta: { title: "用户管理" },
+              meta: { title: "用户管理", auth: ['users'] },
               component: () => import(/* webpackChunkName: "system" */ "@/views/system/user")
             },
             {
               path: "/user/orgs",
               name: "orgs",
-              meta: { title: "组织机构" },
+              meta: { title: "组织机构", auth: ['orgs'] },
               component: () => import(/* webpackChunkName: "system" */ "@/views/system/org")
             },
             {
               path: "/user/roles",
               name: "roles",
-              meta: { title: "角色权限", keepAlive: true },
+              meta: { title: "角色权限", keepAlive: true, auth: ['roles'] },
               component: () => import(/* webpackChunkName: "system" */ "@/views/system/role")
             },
             {
               path: "/user/syscode",
               name: "syscode",
-              meta: { title: "系统代码" },
+              meta: { title: "系统代码", auth: ['syscode'] },
               component: () => import(/* webpackChunkName: "system" */ "@/views/system/syscode/index")
             },
             {
               path: "/user/codetype",
               name: "codetype",
-              meta: { title: "系统代码类型" },
+              meta: { title: "系统代码类型", auth: ['codetype'] },
               component: () => import(/* webpackChunkName: "system" */ "@/views/system/codetype/index")
+            },
+            {
+              path: "/user/syslog",
+              name: "syslog",
+              meta: { title: "操作日志", auth: ['syslog'] },
+              component: () => import(/* webpackChunkName: "system" */ "@/views/system/log/index")
+            },
+            {
+              path: "/user/festival",
+              name: "festival",
+              meta: { title: "节假日", auth: ['festival'] },
+              component: () => import(/* webpackChunkName: "system" */ "@/views/system/festival/index")
+            },
+            {
+              path: "/user/flowconfig",
+              name: "flowconfig",
+              meta: { title: "流程配置", auth: ['flowconfig'] },
+              component: () => import(/* webpackChunkName: "system" */ "@/views/system/flowconfig/index")
+            },
+            {
+              path: "/user/checkrule",
+              name: "checkrule",
+              meta: { title: "积分规则", auth: ['checkrule'] },
+              component: () => import(/* webpackChunkName: "system" */ "@/views/system/checkrule/index")
             }
           ]
         }
@@ -120,16 +139,19 @@ const router = new Router({
     {
       path: "/404",
       hideInMenu: true,
+      meta: { title: "404", auth: ['login'] },
       component: () => import(/* webpackChunkName: "fail" */ "@/views/404")
     },
     {
       path: "/403",
       hideInMenu: true,
+      meta: { title: "403", auth: ['login'] },
       component: () => import(/* webpackChunkName: "fail" */ "@/views/403")
     },
     {
       path: "*",
       redirect: "/404",
+      meta: { title: "404", auth: ['login'] },
       hideInMenu: true
     }
   ]

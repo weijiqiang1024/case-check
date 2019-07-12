@@ -6,23 +6,30 @@
         @click="getRoleAuths(item.roleId)"
         :class="(selectRoleId == item.roleId)?['roleItem roleItemSelected']:'roleItem'"
       >
-        <div>
+        <div class="roleNameDiv">
           <p class="roleName">{{item.roleName}}</p>
-          <p class="roleId">{{item.roleId}}</p>
         </div>
         <div>
           <a-button
+            v-auth="['roles','update']"
             type="default"
             icon="edit"
             size="small"
             style="margin-right:4px;"
             @click="e=>editRole(e,item)"
           ></a-button>
-          <a-button type="default" icon="delete" size="small" @click="e=>handleDel(e,item.roleId)"></a-button>
+          <a-button
+            v-if="item.roleName != 'admin'"
+            v-auth="['roles','delete']"
+            type="default"
+            icon="delete"
+            size="small"
+            @click="e=>handleDel(e,item.roleId)"
+          ></a-button>
         </div>
       </div>
     </template>
-    <EditModal ref="editForm" :handleEditOk="handleEditOk"/>
+    <EditModal ref="editForm" :handleEditOk="handleEditOk" />
   </div>
 </template>
 
@@ -49,13 +56,12 @@ export default {
     };
   },
   mounted() {
-    debugger;
-    console.log(this.roleList, "AAAAAAA");
-    // this.selectRoleId =this.roleList.length > 0 ? this.roleList[0]["roleId"] : "";
+    this.selectRoleId =
+      this.roleList.length > 0 ? this.roleList[0]["roleId"] : "";
   },
   computed: {
     getSelectRole() {
-      debugger;
+      // debugger;
       return this.roleList.length > 0 ? this.roleList[0]["roleId"] : "";
     }
   },
@@ -63,6 +69,7 @@ export default {
     getRoleAuths(roleId) {
       if (roleId == this.selectRoleId) return;
       this.selectRoleId = roleId;
+      this.$emit("selectRoleId", roleId);
     },
     handleDel(e, record) {
       e ? e.preventDefault() : null;
@@ -78,6 +85,8 @@ export default {
             let obj = { ids: record };
             request.post(reqApi.delRole, obj).then(res => {
               that.$message.success(res.msg);
+              that.selectRoleId =
+                that.roleList.length > 0 ? that.roleList[0]["roleId"] : "";
               that.$parent.handleSearch();
             });
           }
@@ -120,8 +129,8 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 4px 0;
-    padding: 10px 14px 0 14px;
+    margin: 6px 0;
+    padding: 24px 16px;
     border-radius: 5px;
     background-color: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
@@ -137,8 +146,8 @@ export default {
     }
 
     p {
-      height: 24px;
-      line-height: 24px;
+      height: 30px;
+      line-height: 30px;
       color: rgba(0, 0, 0, 0.45);
     }
 
@@ -152,6 +161,11 @@ export default {
       background: #fafafa;
       font-size: 14px;
       color: rgba(0, 0, 0, 0.65);
+    }
+
+    .roleNameDiv {
+      height: 22px;
+      line-height: 22px;
     }
 
     .roleId {

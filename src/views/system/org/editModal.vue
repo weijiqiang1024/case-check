@@ -19,7 +19,7 @@
             <a-input
               size="small"
               :disabled="disabled"
-              v-decorator="['orgCode',{initialValue:record.orgCode},{rules: [{required: true,message:'不能为空'}]}]"
+              v-decorator="['orgCode',{initialValue:record.orgCode,rules: [{required: true,message:'不能为空'}]}]"
             />
           </a-form-item>
         </a-col>
@@ -28,7 +28,7 @@
             <a-input
               size="small"
               :disabled="disabled"
-              v-decorator="['orgName', {initialValue:record.orgName},{rules: [{required: true,message:'不能为空'}]}]"
+              v-decorator="['orgName', {initialValue:record.orgName,rules: [{required: true,message:'不能为空'}]}]"
             />
           </a-form-item>
         </a-col>
@@ -43,19 +43,22 @@
               allowClear
               treeDefaultExpandAll
               @change="onChange"
-              v-decorator="['parentOrgId', {initialValue:record.parentOrgId},{rules: [{required: true,message:'不能为空'}]}]"
+              v-decorator="['parentOrgId', {initialValue:record.parentOrgId,rules: [{required: true,message:'不能为空'}]}]"
               size="small"
               :disabled="disabled"
             />
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="机构类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
-            <a-input
+          <a-form-item label="机构权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input-search
+              @search="onCreate"
               size="small"
               :disabled="disabled"
-              v-decorator="['orgType',{initialValue:record.orgType}, {rules: [{required: true,message:'不能为空'}]}]"
-            />
+              v-decorator="['orgPrivilegeCode', {initialValue:record.orgPrivilegeCode || '',rules: [{required: true,message:'不能为空'}]}]"
+            >
+              <a-button slot="enterButton" type="primary">生成</a-button>
+            </a-input-search>
           </a-form-item>
         </a-col>
       </a-row>
@@ -65,7 +68,7 @@
             <a-input
               size="small"
               :disabled="disabled"
-              v-decorator="['orgPhoneNbr',{initialValue:record.orgPhoneNbr}, {rules: [{required: true,message:'不能为空'}]}]"
+              v-decorator="['orgPhoneNbr',{initialValue:record.orgPhoneNbr,rules: [{required: true,message:'不能为空'}]}]"
             />
           </a-form-item>
         </a-col>
@@ -74,7 +77,7 @@
             <a-input
               size="small"
               :disabled="disabled"
-              v-decorator="['orgHeaderName',{initialValue:record.orgHeaderName || ''}, {rules: [{required: false}]}]"
+              v-decorator="['orgHeaderName',{initialValue:record.orgHeaderName || '',rules: [{required: false}]}]"
             />
           </a-form-item>
         </a-col>
@@ -85,7 +88,7 @@
             <a-input
               size="small"
               :disabled="disabled"
-              v-decorator="['orgHeaderNbr',{initialValue:record.orgHeaderNbr || ''}, {rules: [{required: false}]}]"
+              v-decorator="['orgHeaderNbr',{initialValue:record.orgHeaderNbr || '',rules: [{required: false}]}]"
             />
           </a-form-item>
         </a-col>
@@ -94,18 +97,18 @@
             <a-input
               size="small"
               :disabled="disabled"
-              v-decorator="['addressDesc',{initialValue:record.addressDesc || ''}, {rules: [{required: false}]}]"
+              v-decorator="['addressDesc',{initialValue:record.addressDesc || '',rules: [{required: false}]}]"
             />
           </a-form-item>
         </a-col>
       </a-row>
       <a-row :gutter="16" type="flex" justify="start">
-        <a-col :span="24">
-          <a-form-item label="备注" :labelCol="{span:3}" :wrapperCol="{span:19}">
+        <a-col :span="12">
+          <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input
               size="small"
               :disabled="disabled"
-              v-decorator="['remark',{initialValue:record.remark || ''}, {rules: [{required: false}]}]"
+              v-decorator="['remark',{initialValue:record.remark || '',rules: [{required: false}]}]"
             />
           </a-form-item>
         </a-col>
@@ -118,6 +121,8 @@
   <script>
 import Vue from "vue";
 import { Modal, TreeSelect } from "ant-design-vue";
+import reqApi from "@/api/index";
+import request from "@/utils/request";
 Vue.use(Modal);
 Vue.use(TreeSelect);
 export default {
@@ -188,6 +193,21 @@ export default {
     },
     onChange(value) {
       this.value = value;
+    },
+    onCreate() {
+      let parentOrgId = this.form.getFieldValue("parentOrgId");
+      if (!parentOrgId) {
+        this.$message.warning("请先选择父机构！");
+        return false;
+      }
+      request
+        .get(reqApi.createOrgPrivilegeCodeByParentOrgId, {
+          parentOrgId: parentOrgId
+        })
+        .then(res => {
+          if (!res) return false;
+          this.form.setFieldsValue({ orgPrivilegeCode: res.result });
+        });
     }
   }
 };

@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-17 08:57:16 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-24 10:57:01
+ * @Last Modified time: 2019-07-10 16:00:21
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -20,6 +20,7 @@ const state = {
         rows: [],
         total: 0
     },
+    orgKeyValue: {},
     //机构树
     orgTree: [],
     //addOrg 临时数据
@@ -35,6 +36,9 @@ const state = {
 const mutations = {
     [ORG_LIST]: (state, orgs) => {
         state.list = orgs;
+    },
+    ORG_KEY_VALUE: (state, orgs) => {
+        state.orgKeyValue = orgs;
     },
     [ORG_TREE]: (state, orgs) => {
         state.orgTree = orgs;
@@ -80,6 +84,8 @@ const actions = {
                         let tempArr = _.cloneDeep(Arr);
                         getNodeAttr(tempArr);
                         commit(ORG_TREE, tempArr);
+                        //org-key-value-dic
+                        // commit('ORG_KEY_VALUE', obj.temp);
                         resolve(tempArr);
                     }
                 })
@@ -163,3 +169,12 @@ function getNodeAttr(arr) {
     }
     return arr;
 }
+
+// function setOrgKeyValue(arr) {
+//     if (!_.isArray(arr)) return {};
+//     let o = {};
+//     arr.map(item => {
+//         o[item.orgId] = item.orgName || '--';
+//     })
+//     return o;
+// }

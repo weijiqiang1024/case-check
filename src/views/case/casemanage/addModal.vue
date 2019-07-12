@@ -3,6 +3,7 @@
     title="添加案件信息"
     :width="1280"
     :visible="visible"
+    :destroyOnClose="true"
     :maskClosable="false"
     :confirmLoading="confirmLoading"
     cancelText="取消"
@@ -15,7 +16,12 @@
         <div class="panel">
           <div class="panelName">基础信息</div>
           <div class="panelContent">
-            <base-info ref="baseInfo"/>
+            <base-info
+              ref="baseInfo"
+              :record="{}"
+              :disabled="disabled"
+              :processPersonArr="processPersonArr"
+            />
           </div>
         </div>
       </div>
@@ -23,15 +29,15 @@
         <div class="panel">
           <div class="panelName">涉案人员</div>
           <div class="panelContent">
-            <person-info ref="personInfo"/>
+            <person-info ref="personInfo" :record="[]" :disabled="disabled" />
           </div>
         </div>
       </div>
       <div class="dealInfo">
         <div class="panel">
-          <div class="panelName">处理信息</div>
+          <div class="panelName">案件程序</div>
           <div class="panelContent">
-            <case-deal/>
+            <case-type ref="caseType" :record="{}" :disabled="disabled" />
           </div>
         </div>
       </div>
@@ -45,31 +51,32 @@ import Vue from "vue";
 import { Modal } from "ant-design-vue";
 import baseInfo from "./baseInfo";
 import personInfo from "./casePerson";
-import caseDeal from "./caseDeal";
+import caseType from "./caseType";
 Vue.use(Modal);
 export default {
   components: {
     "base-info": baseInfo,
     "person-info": personInfo,
-    "case-deal": caseDeal
+    "case-type": caseType
   },
   props: {
-    codeType: {
-      type: Object,
-      required: true,
-      default: null
-    },
     handleAddOk: {
       //父组件传递添加方法
       type: Function,
       required: true,
       default: null
+    },
+    processPersonArr: {
+      type: Array,
+      required: true,
+      default: () => []
     }
   },
   data() {
     return {
       visible: this.addModalVisible, //modal框显示隐藏
       confirmLoading: false, //提交操作loading显示
+      disabled: false,
       form: this.$form.createForm(this)
     };
   },
@@ -81,17 +88,22 @@ export default {
     handleSubmit() {
       //表单数据提交方法
       let baseInfo = this.$refs.baseInfo.getFormData(),
-        personInfo = this.$refs.personInfo.getCasePerson();
-      if (baseInfo) {
-        baseInfo = this.$refs.baseInfo.getFormData();
-      }
-      if (personInfo) {
-        personInfo = JSON.stringify(personInfo);
+        personInfo = this.$refs.personInfo.getCasePerson(),
+        dealInfo = this.$refs.caseType.getDealData();
+
+      if (!dealInfo) {
+        this.$message.warning("处理程序必填！");
+        return;
       }
 
-      if (baseInfo && personInfo) {
+      if (personInfo == "[]") {
+        this.$message.warning("涉案人不能为空");
+        return;
+      }
+      personInfo = JSON.stringify(personInfo);
+      if (baseInfo) {
         baseInfo.relationPersons = personInfo;
-        console.log(baseInfo, 999);
+        baseInfo.processType = dealInfo.processType;
         this.handleAddOk(baseInfo);
       } else {
         return false;
@@ -100,8 +112,10 @@ export default {
     handleCancel() {
       //取消方法（也用重置表单状态调用）
       this.visible = false;
-      this.confirmLoading = false;
-      this.form.resetFields();
+      //重置数据
+      this.$refs.baseInfo.resetFields();
+      this.$refs.personInfo.resetFields();
+      this.$refs.caseType.resetFields();
     }
   }
 };
@@ -110,6 +124,7 @@ export default {
 <style lang="scss" scoped>
 // $shadow: 0px 17px 10px -10px rgba(0, 0, 0, 0.4);
 $shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+$border-radius: 8px;
 
 .remark {
   transform: translateX(4%);
@@ -127,6 +142,7 @@ $shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   width: 94%;
   margin: 14px 0 4px;
   margin-left: 3%;
+  border-radius: $border-radius;
   box-shadow: $shadow;
 }
 
@@ -137,7 +153,7 @@ $shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   height: 100%;
   width: 100%;
   background: #108ee9;
-  border-radius: 8px;
+  border-radius: $border-radius;
 }
 
 .panelName {
@@ -148,7 +164,7 @@ $shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   color: #fff;
   font-size: 14;
   font-weight: 700;
-  border-radius: 6px;
+  border-radius: $border-radius;
   letter-spacing: 2px;
 }
 
@@ -167,6 +183,7 @@ $shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   width: 94%;
   margin: 4px 0;
   margin-left: 3%;
+  border-radius: $border-radius;
   box-shadow: $shadow;
 }
 
@@ -176,6 +193,7 @@ $shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   width: 94%;
   margin: 4px 0 14px;
   margin-left: 3%;
+  border-radius: $border-radius;
   box-shadow: $shadow;
 }
 </style>

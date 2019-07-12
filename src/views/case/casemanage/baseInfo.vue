@@ -8,7 +8,8 @@
             format="YYYY-MM-DD HH:mm:ss"
             size="small"
             style="width:100%"
-            v-decorator="['happenTime',{rules: [{required: true,message:'不能为空'}]}]"
+            v-decorator="['happenTime',{initialValue:record && record.happenTime? moment(record.happenTime):moment(),rules: [{required: true,message:'不能为空'}]}]"
+            :disabled="disabled"
           />
         </a-form-item>
       </a-col>
@@ -16,16 +17,26 @@
         <a-form-item label="发生地点" v-bind="formItemLayout">
           <a-input
             size="small"
-            v-decorator="['happenAddress', {rules: [{required: true,message:'不能为空'}]}]"
+            :disabled="disabled"
+            v-decorator="['happenAddress', {initialValue:record.happenAddress,rules: [{required: true,message:'不能为空'}]}]"
           />
         </a-form-item>
       </a-col>
       <a-col :span="8">
         <a-form-item label="经办人" v-bind="formItemLayout">
-          <a-input
+          <!-- <a-input
             size="small"
-            v-decorator="['processPerson', {rules: [{required: false,message:'不能为空'}]}]"
-          />
+            :disabled="disabled"
+            v-decorator="['processPerson', {initialValue:record.processPerson,rules: [{required: true,message:'不能为空'}]}]"
+          />-->
+          <a-select
+            v-decorator="['processPerson',{initialValue:record.processPerson,rules: [{required: true,message:'不能为空'}]}]"
+            size="small"
+            :disabled="disabled"
+            :allowClear="true"
+          >
+            <a-select-option v-for="p in processPersonArr" :key="p.username">{{p.fullName}}</a-select-option>
+          </a-select>
         </a-form-item>
       </a-col>
     </a-row>
@@ -35,7 +46,9 @@
           <a-input
             addonAfter="人"
             size="small"
-            v-decorator="['deathNbr', {rules: [{required: false,message:'不能为空'}]}]"
+            :disabled="disabled"
+            v-decorator="['deathNbr', {initialValue:record.deathNbr-0||0,rules: [{required: false,pattern:/^(0|\+?[1-9][0-9]*)$/,
+            message:'请正确填写数字'}]}]"
           />
         </a-form-item>
       </a-col>
@@ -44,7 +57,9 @@
           <a-input
             addonAfter="人"
             size="small"
-            v-decorator="['hurtNbr', {rules: [{required: false,message:'不能为空'}]}]"
+            :disabled="disabled"
+            v-decorator="['hurtNbr', {initialValue:record.hurtNbr-0|| 0,rules: [{required: false,pattern:/^(0|\+?[1-9][0-9]*)$/,
+            message:'请正确填写数字'}]}]"
           />
         </a-form-item>
       </a-col>
@@ -53,7 +68,9 @@
           <a-input
             addonAfter="元"
             size="small"
-            v-decorator="['lossNbr', {rules: [{required: false,message:'不能为空'}]}]"
+            :disabled="disabled"
+            v-decorator="['lossNbr', {initialValue:record.lossNbr-0 || 0,rules: [{required: false,pattern:/^[0-9]+.?[0-9]*$/,
+            message:'请正确填写数字'}]}]"
           />
         </a-form-item>
       </a-col>
@@ -67,7 +84,8 @@
         <a-form-item label="原因" :labelCol="{span:3}" :wrapperCol="{span:18}">
           <a-input
             size="small"
-            v-decorator="['reason', {initialValue:''},{rules: [{required: false}]}]"
+            :disabled="disabled"
+            v-decorator="['reason', {initialValue:record.reason||''},{initialValue:''},{rules: [{required: false}]}]"
           />
         </a-form-item>
       </a-col>
@@ -77,7 +95,8 @@
         <a-form-item label="备注" :labelCol="{span:3}" :wrapperCol="{span:18}">
           <a-input
             size="small"
-            v-decorator="['remark', {initialValue:''},{rules: [{required: false}]}]"
+            :disabled="disabled"
+            v-decorator="['remark',{initialValue:record.remark || ''}, {initialValue:''},{rules: [{required: false}]}]"
           />
         </a-form-item>
       </a-col>
@@ -88,7 +107,23 @@
 <script>
 import moment from "moment";
 export default {
-  props: {},
+  props: {
+    record: {
+      type: Object,
+      required: true,
+      default: () => {}
+    },
+    disabled: {
+      type: Boolean,
+      required: true,
+      default: false
+    },
+    processPersonArr: {
+      type: Array,
+      required: true,
+      default: () => []
+    }
+  },
   data() {
     return {
       formItemLayout: {
@@ -105,14 +140,20 @@ export default {
       this.form.validateFields((errors, values) => {
         if (!errors) {
           if (values.happenTime) {
-            values.happenTime = moment(values.happenTime).format("YYYY-MM-DD HH:mm:ss");
+            values.happenTime = moment(values.happenTime).format(
+              "YYYY-MM-DD HH:mm:ss"
+            );
           }
           v = Object.assign(v, values);
         } else {
+          this.$message.warning("请检查基础信息！");
           return false;
         }
       });
       return v;
+    },
+    resetFields() {
+      this.form.resetFields();
     }
   }
 };

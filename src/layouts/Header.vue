@@ -1,39 +1,51 @@
 <template>
-  <div>
+  <div style="display:flex;">
+    <div class="bellCount">
+      <NoticeIcon />
+    </div>
+    <div class="bellCount">
+      <DownLoad />
+    </div>
     <div class="userInfo">
-      <a-avatar class="avatar" icon="user"/>
+      <a-avatar class="avatar" icon="user" />
       <span class="username">{{username}}</span>
       <div class="settingPanel">
         <ul>
-          <li>
-            <a-icon type="user"/>&nbsp;个人中心
+          <li @click="changePassword">
+            <a-icon type="user" />&nbsp;修改密码
           </li>
-          <li>
-            <a-icon type="setting"/>&nbsp;账户设置
-          </li>
+          <!-- <li>
+            <a-icon type="setting" />&nbsp;账户设置
+          </li> -->
           <li @click="logoutHandler">
-            <a-icon type="logout"/>&nbsp;退出登陆
+            <a-icon type="logout" />&nbsp;退出登陆
           </li>
         </ul>
       </div>
     </div>
+    <ChangePassword ref="ChangePassword"/> 
   </div>
 </template>
 
 <script>
-import { Avatar } from "ant-design-vue";
+
 import { mapActions } from "vuex";
+import NoticeIcon from "./NoticeIcon";
+import DownLoad from "./DownLoad";
+import ChangePassword from '@/views/system/user/changePassword'
 export default {
   components: {
-    "a-avatar": Avatar
+    NoticeIcon,
+    DownLoad,
+    ChangePassword
   },
   data() {
     let userInfo = JSON.parse(sessionStorage.getItem("user_info") || "{}");
     return {
-      username: userInfo && userInfo.username || '猫咪'
+      username: (userInfo && userInfo.username) || "猫咪"
     };
   },
-  mounted(){
+  mounted() {
     // console.log(this.$store.state.user,'user');
   },
   methods: {
@@ -52,12 +64,26 @@ export default {
     },
     logoutFailed(err) {
       console.log(err);
+    },
+    changePassword(){
+      this.$refs.ChangePassword.add();
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.bellCount {
+  position: relative;
+  height: 100%;
+  padding: 0 20px;
+  font-size: 18px;
+  cursor: pointer;
+
+  &:hover{
+    background: rgba(0, 0, 0, 0.025);
+  }
+}
 .userInfo {
   position: relative;
   height: 100%;
@@ -65,7 +91,10 @@ export default {
   cursor: pointer;
 
   .avatar {
+    width: 26px;
+    height: 26px;
     margin: 20px 8px 20px 0;
+    font-size: 16px;
     background-color: #1890ff;
   }
 

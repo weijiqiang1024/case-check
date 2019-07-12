@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-07 22:53:45 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-22 11:24:40
+ * @Last Modified time: 2019-07-02 19:51:03
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -17,6 +17,7 @@ import getters from './getters'
 import user from './modules/system/user'
 import org from './modules/system/org'
 import syscode from './modules/system/syscode'
+import socket from './modules/socket'
 
 Vue.use(Vuex)
 
@@ -30,7 +31,8 @@ export default new Vuex.Store({
     modules: {
         user,
         org,
-        syscode
+        syscode,
+        socket
     },
     state: {
         token: ""

@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-09 22:43:02 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-27 10:35:25
+ * @Last Modified time: 2019-07-12 17:39:46
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -62,7 +62,13 @@
         </div>
         <div class="tableArea">
           <div class="buttonArea">
-            <a-button type="primary" size="small" @click="$refs.addForm.add()" class="addBtn">添加</a-button>
+            <a-button
+              v-auth="['users','add']"
+              type="primary"
+              size="small"
+              @click="$refs.addForm.add()"
+              class="addBtn"
+            >添加</a-button>
             <a-popconfirm
               title="确定删除?"
               :visible="visibleTip"
@@ -72,7 +78,7 @@
               okText="确定"
               cancelText="取消"
             >
-              <a-button type="primary" size="small">删除</a-button>
+              <a-button type="primary" size="small"  v-auth="['users','delete']">删除</a-button>
             </a-popconfirm>
           </div>
           <div class="tableInfo">
@@ -89,8 +95,8 @@
               <!-- <a slot="name" slot-scope="text" href="javascript:;">{{text}}</a> -->
               <span slot="action" slot-scope="text,record">
                 <template>
-                  <a @click="handleEdit(record)">修改</a>
-                  <a-divider type="vertical"/>
+                  <a @click="handleEdit(record)" v-auth="['users','update']">修改</a>
+                  <a-divider type="vertical" />
                   <a-popconfirm
                     title="确定删除?"
                     @confirm="handleDel(record.userId)"
@@ -98,18 +104,30 @@
                     okText="确定"
                     cancelText="取消"
                   >
-                    <a>删除</a>
+                    <a v-auth="['users','delete']">删除</a>
                   </a-popconfirm>
-                  <a-divider type="vertical"/>
-                  <a @click="viewData(record)">查看</a>
+                  <a-divider type="vertical" />
+                  <a @click="resetPassword(record)" v-auth="['users','reset']">重置密码</a>
+                  <a-divider type="vertical" />
+                  <a @click="viewData(record)" v-auth="['users','query']">查看</a>
                 </template>
               </span>
             </a-table>
           </div>
         </div>
       </div>
-      <add-modal ref="addForm" :handleAddOk="handleAddOk" :treeData="treeData"/>
-      <edit-modal ref="editForm" :handleEditOk="handleEditOk" :treeData="treeData"/>
+      <add-modal
+        ref="addForm"
+        :handleAddOk="handleAddOk"
+        :treeData="treeData"
+        :roleType="roleType"
+      />
+      <edit-modal
+        ref="editForm"
+        :handleEditOk="handleEditOk"
+        :treeData="treeData"
+        :roleType="roleType"
+      />
     </div>
   </div>
 </template>
@@ -125,46 +143,6 @@ import orgTree from "@/components/orgTree";
 import addModal from "./addModal";
 import editModal from "./editModal";
 
-//表头
-const columns = [
-  {
-    title: "用户名",
-    dataIndex: "username",
-    width: "10%"
-    // scopedSlots: { customRender: "name" }
-  },
-  {
-    title: "所属机构",
-    dataIndex: "orgId",
-    width: "25%",
-    customRender: text => text || "--"
-  },
-  {
-    title: "姓名",
-    dataIndex: "fullName",
-    width: "10%",
-    customRender: text => text || "--"
-  },
-  {
-    title: "电话",
-    dataIndex: "phoneNbr",
-    width: "10%",
-    customRender: text => text || "--"
-  },
-  {
-    title: "是否启用",
-    dataIndex: "enableFlag",
-    width: "10%",
-    customRender: text => (text == 1 ? "是" : "否")
-  },
-  {
-    title: "操作",
-    dataIndex: "action",
-    width: "25%",
-    scopedSlots: { customRender: "action" }
-  }
-];
-
 Vue.use(Divider);
 // const org_id = JSON.parse(sessionStorage.getItem("user_info"))["orgId"];
 export default {
@@ -174,18 +152,61 @@ export default {
     "edit-modal": editModal
   },
   data() {
-    console.log(this.total, 666);
     return {
-      columns,
       loading: false,
       form: this.$form.createForm(this),
       tableHight: 0, //table 高度
-    //   treeData: [], //机构树数据
+      //   treeData: [], //机构树数据
       defaultExpandedKeys: [], //树默认打开的节点
       isSelectKey: "", //被选中的节点
       selectedRowKeys: [], //选中行key
       visibleTip: false, //删除确认旗气泡框
       dataSource: [], //table数据
+      roleType: {},
+      columns: [
+        {
+          title: "用户名",
+          dataIndex: "username",
+          width: "10%"
+          // scopedSlots: { customRender: "name" }
+        },
+        {
+          title: "所属机构",
+          dataIndex: "orgName",
+          width: "25%",
+          customRender: text => text || "--"
+        },
+        {
+          title: "角色",
+          dataIndex: "roleIds",
+          width: "10%",
+          customRender: text => this.roleType[text] || "--"
+        },
+        {
+          title: "姓名",
+          dataIndex: "fullName",
+          width: "10%",
+          customRender: text => text || "--"
+        },
+        {
+          title: "电话",
+          dataIndex: "phoneNbr",
+          width: "10%",
+          customRender: text => text || "--"
+        },
+        {
+          title: "是否启用",
+          dataIndex: "enableFlag",
+          width: "10%",
+          customRender: text => (text == 1 ? "是" : "否")
+        },
+        {
+          title: "操作",
+          dataIndex: "action",
+          width: "25%",
+          scopedSlots: { customRender: "action" }
+        }
+      ],
       pagination: {
         //分页信息
         pageNumber: 1,
@@ -205,6 +226,7 @@ export default {
   mounted() {
     //默认数据查询
     this.handleSearch();
+    this.getRole();
   },
   computed: {
     ...mapState({
@@ -239,17 +261,18 @@ export default {
         this.visibleTip = false;
       }
     },
-    handleSearch(e, query = {}) {
+    handleSearch(e, query = {}, pagination = {}) {
       //机构列表查询方法
       e ? e.preventDefault() : null;
       this.form.validateFields((err, values) => {
         if (!err) {
-          const { current, pageSize } = this.pagination;
+          let pageNumber = pagination.pageNumber || 1;
+          let pageSize = pagination.pageSize || 10;
           let params = {
             ...query,
             ...values, //[orgCode,orgName]
             pageSize,
-            pageNumber: current
+            pageNumber
           };
           request
             .get(reqApi.userList, params)
@@ -262,16 +285,28 @@ export default {
         }
       });
     },
+    getRole() {
+      let that = this;
+      request.get(reqApi.roleList, {}).then(res => {
+        if (!res) return;
+        console.log(res.result.rows);
+        for (let i in res.result.rows) {
+          that.roleType[res.result.rows[i].roleId] =
+            res.result.rows[i].roleName;
+        }
+      });
+    },
     handleTableChange(pagination) {
       //分页变化处理
       const pager = { ...this.pagination };
       pager.current = pager.pageNumber = pagination.current;
       this.pagination = pager;
-      this.handleSearch(false);
+      this.handleSearch(false, {}, this.pagination);
     },
     handleAddOk(values) {
       //添加操作请求方法
-      request.post(reqApi.addUser,values)
+      request
+        .post(reqApi.addUser, values)
         .then(res => {
           this.$message.success(res.msg);
           this.$refs.addForm.handleCancel();
@@ -280,7 +315,6 @@ export default {
         .finally(() => (this.$refs.addForm.confirmLoading = false));
     },
     handleDel(record) {
-      debugger;
       //删除、批量删除操作请求方法
       if (record) {
         if (_.isArray(record)) {
@@ -290,7 +324,7 @@ export default {
           record = record.join(",");
         }
         let obj = { ids: record };
-        request.post(reqApi.delUser,obj).then(res => {
+        request.post(reqApi.delUser, obj).then(res => {
           this.$message.success(res.msg);
           this.refresh();
         });
@@ -307,7 +341,8 @@ export default {
     },
     handleEditOk(values) {
       //修改完成请求方法
-      request.post(reqApi.editUser,values)
+      request
+        .post(reqApi.editUser, values)
         .then(res => {
           this.$message.success(res.msg);
           this.$refs.editForm.handleCancel();
@@ -326,6 +361,15 @@ export default {
       this.pagination.pageSize = 10;
       let query = { orgId: orgId, recursive: "1" };
       this.handleSearch(false, query);
+    },
+    resetPassword(record) {
+      request
+        .post(reqApi.resetPassword, { userId: record.userId })
+        .then(res => {
+          if (!res) return false;
+          this.$message.success(res.msg);
+          this.refresh();
+        });
     },
     refresh() {
       //重新查询请求

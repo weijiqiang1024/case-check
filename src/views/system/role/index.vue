@@ -5,6 +5,7 @@
         <div class="treeNameArea roleName">
           <span>角色信息</span>
           <a-button
+            v-auth="['roles','add']"
             type="default"
             shape="circle"
             icon="plus"
@@ -14,13 +15,19 @@
         </div>
         <div class="treeArea" style="background:#f0f2f5">
           <div class="orgTreeDiv">
-            <roleList :roleList="dataSource"/>
+            <div v-if="dataSource.length != 0">
+              <roleList :roleList="dataSource" v-on:selectRoleId="getAuthListByRoleId" />
+            </div>
           </div>
         </div>
-        <AddModal ref="addForm" :handleAddOk="handleAddOk"/>
+        <AddModal ref="addForm" :handleAddOk="handleAddOk" />
       </div>
       <div class="mainArea">
-        <div class="searchArea"></div>
+        <div class="searchArea" style="border:0px;">
+          <div v-if="dataSource.length != 0 && allPageAuths.length != 0 && hasSelectStatus">
+            <AuthList :roleId="roleId" :allPageAuths="allPageAuths" :hasSelect="hasSelect" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -32,24 +39,30 @@ import request from "@/utils/request";
 import reqApi from "@/api/index";
 import AddModal from "./addRoleModal";
 import RoleList from "./roleList";
+import AuthList from "./authList";
 export default {
   components: {
     AddModal,
-    RoleList
+    RoleList,
+    AuthList
   },
   data() {
     return {
-      dataSource: []
+      listHeight: 0,
+      dataSource: [],
+      allPageAuths: [],
+      hasSelect: {},
+      hasSelectStatus: false,
+      roleId: ""
     };
+  },
+  created() {
+    this.listHeight = document.body.clientHeight - 380;
   },
   mounted() {
     //默认数据查询
     this.handleSearch();
-  },
-  computed: {
-    getDataSource() {
-      return this.dataSource;
-    }
+    this.getAllPageAuth();
   },
   methods: {
     handleSearch() {
@@ -58,6 +71,9 @@ export default {
         .get(reqApi.roleList, {})
         .then(res => {
           this.dataSource = _.cloneDeep(res.result.rows);
+          this.hasSelectStatus = false;
+          this.roleId = this.dataSource[0]["roleId"];
+          this.getAuthListByRoleId(this.dataSource[0]["roleId"] || "");
         })
         .finally(() => (this.loading = false));
     },
@@ -71,6 +87,51 @@ export default {
           this.handleSearch();
         })
         .finally(() => (this.$refs.addForm.confirmLoading = false));
+    },
+    getAllPageAuth() {
+      request.get(reqApi.getAllPageAuth, {}).then(res => {
+        if (res) {
+          let data = _.cloneDeep(res.result);
+          let temp = [];
+          data.map(item => {
+            let o = {};
+            o.routeCode = item.routeCode;
+            o.routeName = item.routeName;
+            o.operates = [];
+            if (item.operates && item.operates.length > 0) {
+              item.operates.map(i => {
+                let t = {};
+                t.operateCode = i.operateCode;
+                t.operateName = i.operateName;
+                t.label = i.operateName;
+                t.value = i.operateCode;
+                o.operates.push(t);
+              });
+            }
+            temp.push(o);
+          });
+          this.allPageAuths = temp;
+        }
+      });
+    },
+    getAuthListByRoleId(id) {
+      let that = this;
+      this.roleId = id;
+      this.hasSelectStatus = false;
+      request.get(reqApi.getAuthByRoleId, { id }).then(res => {
+        that.hasSelect = {};
+        if (res) {
+          let data = res.result;
+          let o = {};
+          data.forEach(ele => {
+            o[ele.authCode] = {};
+            o[ele.authCode]["has"] = true;
+            o[ele.authCode]["auth"] = ele.operateCodes.split(",");
+          });
+          that.hasSelect = o;
+          that.hasSelectStatus = true;
+        }
+      });
     }
   }
 };

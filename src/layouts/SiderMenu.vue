@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-11 18:27:00 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-26 18:00:06
+ * @Last Modified time: 2019-07-09 18:12:18
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -61,7 +61,8 @@ export default {
       const menuData = [];
       for (let item of routes) {
         if (item.meta && item.meta.auth && !checkAuth(item.meta.auth)) {
-          break;
+          // break;
+          continue;
         }
         if (item.name && !item.hideInMenu) {
           this.openKeysMap[item.path] = parentKeys;

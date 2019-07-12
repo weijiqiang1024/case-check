@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-12 18:20:00 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-24 17:52:21
+ * @Last Modified time: 2019-06-29 11:49:09
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -25,3 +25,5 @@
  export const SYS_CODE_LIST = 'Sys-Code-List';
  //系统代码类型
  export const SYS_CODE = 'Sys-Code';
+ //系统代码类型处理后的数据
+ export const SYS_CODE_KEY_NAME = 'Sys-Code-Key-Name';

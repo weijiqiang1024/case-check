@@ -45,20 +45,31 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
+          <a-form-item label="机构权限" :labelCol="labelCol" :wrapperCol="wrapperCol">
+            <a-input-search
+              @search="onCreate"
+              size="small"
+              v-decorator="['orgPrivilegeCode', {initialValue:'',rules: [{required: true,message:'不能为空'}]}]"
+            >
+              <a-button slot="enterButton" type="primary">生成</a-button>
+            </a-input-search>
+          </a-form-item>
+        </a-col>
+        <!-- <a-col :span="12">
           <a-form-item label="机构类型" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input
               size="small"
               v-decorator="['orgType',{rules: [{required: true,message:'不能为空'}]}]"
             />
           </a-form-item>
-        </a-col>
+        </a-col>-->
       </a-row>
       <a-row :gutter="16">
         <a-col :span="12">
           <a-form-item label="机构电话" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input
               size="small"
-              v-decorator="['orgPhoneNbr',{initialValue:''},{rules: [{required: false}]}]"
+              v-decorator="['orgPhoneNbr',{initialValue:'',rules: [{required: false,message:'不能为空'}]}]"
             />
           </a-form-item>
         </a-col>
@@ -66,7 +77,7 @@
           <a-form-item label="负责人名称" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input
               size="small"
-              v-decorator="['orgHeaderName', {initialValue:''},{rules: [{required: false}]}]"
+              v-decorator="['orgHeaderName', {initialValue:'',rules: [{required: false}]}]"
             />
           </a-form-item>
         </a-col>
@@ -76,7 +87,7 @@
           <a-form-item label="负责人电话" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input
               size="small"
-              v-decorator="['orgHeaderNbr',{initialValue:''}, {rules: [{required: false}]}]"
+              v-decorator="['orgHeaderNbr',{initialValue:'',rules: [{required: false}]}]"
             />
           </a-form-item>
         </a-col>
@@ -84,17 +95,17 @@
           <a-form-item label="机构地址" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input
               size="small"
-              v-decorator="['addressDesc', {initialValue:''},{rules: [{required: false}]}]"
+              v-decorator="['addressDesc', {initialValue:'',rules: [{required: false}]}]"
             />
           </a-form-item>
         </a-col>
       </a-row>
       <a-row :gutter="16" type="flex" justify="start">
-        <a-col :span="24">
-          <a-form-item label="备注" :labelCol="{span:3}" :wrapperCol="{span:19}">
+        <a-col :span="12">
+          <a-form-item label="备注" :labelCol="labelCol" :wrapperCol="wrapperCol">
             <a-input
               size="small"
-              v-decorator="['remark', {initialValue:''},{rules: [{required: false}]}]"
+              v-decorator="['remark', {initialValue:'',rules: [{required: false}]}]"
             />
           </a-form-item>
         </a-col>
@@ -107,6 +118,8 @@
 <script>
 import Vue from "vue";
 import { Modal, TreeSelect } from "ant-design-vue";
+import reqApi from "@/api/index";
+import request from "@/utils/request";
 Vue.use(Modal);
 Vue.use(TreeSelect);
 export default {
@@ -167,6 +180,21 @@ export default {
     },
     onChange(value) {
       this.value = value;
+    },
+    onCreate() {
+      let parentOrgId = this.form.getFieldValue("parentOrgId");
+      if (!parentOrgId) {
+        this.$message.warning("请先选择父机构！");
+        return false;
+      }
+      request
+        .get(reqApi.createOrgPrivilegeCodeByParentOrgId, {
+          parentOrgId: parentOrgId
+        })
+        .then(res => {
+          if (!res) return false;
+          this.form.setFieldsValue({orgPrivilegeCode:res.result})
+        });
     }
   }
 };

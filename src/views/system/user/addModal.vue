@@ -22,11 +22,15 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="密码" v-bind="formItemLayout">
-            <a-input
+          <a-form-item label="角色" v-bind="formItemLayout">
+            <a-select
+              v-decorator="['roleIds',{rules: [{required: true,message:'必填'}]}]"
+              style="width:184px"
               size="small"
-              v-decorator="['password', {rules: [{required: true,message:'不能为空'}]}]"
-            />
+              :allowClear="true"
+            >
+              <a-select-option v-for="(name,value) in roleType" :key="value">{{name}}</a-select-option>
+            </a-select>
           </a-form-item>
         </a-col>
       </a-row>
@@ -46,6 +50,21 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
+          <a-form-item label="警员类型" v-bind="formItemLayout">
+            <a-select
+              v-decorator="['userType',{rules: [{required: true,message:'不能为空'}]}]"
+              style="width:184px"
+              size="small"
+              :allowClear="true"
+            >
+              <a-select-option value="1">领导</a-select-option>
+              <a-select-option value="2">警员</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+      </a-row>
+      <a-row :gutter="16">
+        <a-col :span="12">
           <a-form-item label="姓名" v-bind="formItemLayout">
             <a-input
               size="small"
@@ -53,8 +72,6 @@
             />
           </a-form-item>
         </a-col>
-      </a-row>
-      <a-row :gutter="16">
         <a-col :span="12">
           <a-form-item label="电话" v-bind="formItemLayout">
             <a-input
@@ -63,6 +80,8 @@
             />
           </a-form-item>
         </a-col>
+      </a-row>
+      <a-row :gutter="16">
         <a-col :span="12">
           <a-form-item label="是否启用" v-bind="formItemLayout">
             <a-radio-group v-decorator="['enableFlag',{initialValue:'1'}]" size="small">
@@ -95,6 +114,11 @@ export default {
       type: Function,
       required: true,
       default: null
+    },
+    roleType: {
+      type: Object,
+      required: true,
+      default: () => []
     }
   },
   data() {
@@ -142,8 +166,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.form {
-}
 .remark {
   transform: translateX(4%);
 }

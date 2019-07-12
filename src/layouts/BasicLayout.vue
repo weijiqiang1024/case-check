@@ -4,7 +4,7 @@
  * @Author: weijq@cychina.cn (韦继强) 
  * @Date: 2019-06-10 15:07:19 
  * @Last Modified by: weijq@cychina.cn (韦继强)
- * @Last Modified time: 2019-06-27 11:54:15
+ * @Last Modified time: 2019-07-10 11:14:42
  * @Version:V1.0 
  * Copyright: Copyright (c) 2017' 
  */
@@ -20,13 +20,14 @@
         class="siderMenu"
       >
         <div class="logo">
-          <img :src="jinghui" alt class="logoImg">
+          <img :src="jinghui" alt class="logoImg" />
           <span class="sysName">案件核查平台</span>
         </div>
-        <SiderMenu/>
+        <SiderMenu />
       </a-layout-sider>
       <a-layout>
         <div class="sectorBack"></div>
+        <div class="sectorBackBottom"></div>
         <div class="mainArea">
           <a-layout-header class="alHeader">
             <a-icon
@@ -34,7 +35,7 @@
               :type="collapsed ? 'menu-unfold' : 'menu-fold'"
               @click="()=> collapsed = !collapsed"
             ></a-icon>
-            <Header class="header"/>
+            <Header class="header" />
           </a-layout-header>
           <a-layout-content class="content">
             <router-view></router-view>
@@ -53,6 +54,9 @@ import Header from "./Header";
 // import Footer from "./Footer";
 import SiderMenu from "./SiderMenu";
 import jinghui from "@/assets/jinghui.png";
+import moment from "moment";
+import { mapActions } from "vuex";
+import { config } from "@/utils/config";
 export default {
   components: {
     Header,
@@ -64,6 +68,63 @@ export default {
       collapsed: false,
       jinghui: jinghui
     };
+  },
+  mounted() {
+    this.initWebSocket(); //订阅websocket
+  },
+  beforeDestroy() {
+    this.websocket.onclose();
+  },
+  methods: {
+    ...mapActions({
+      changeMatureMsg: "socket/setMatureMessage",
+      changeDealMsg: "socket/setDealMessage"
+    }),
+    initWebSocket() {
+      //初始化weosocket
+      const wsuri = config.wsUrl; //ws地址
+      this.websocket = new WebSocket(wsuri);
+      this.websocket.onopen = this.websocketonopen;
+      this.websocket.onerror = this.websocketonerror;
+      this.websocket.onmessage = this.websocketonmessage;
+      this.websocket.onclose = this.websocketclose;
+    },
+    websocketonopen() {
+      console.log("WebSocket连接成功");
+      const token = sessionStorage.getItem("Access-Token");
+      let tokenStringfy = "";
+      token && (tokenStringfy = JSON.stringify({ token: token }));
+      this.websocketsend(tokenStringfy);
+    },
+    websocketonerror(e) {
+      //错误
+      console.log(e, "WebSocket连接发生错误");
+    },
+    websocketonmessage(e) {
+      console.log(e, "message");
+      console.info(moment().format("YYYY-MM-DD HH:mm:ss"));
+      //数据接收
+      const redata = JSON.parse(e.data);
+      switch (redata.type) {
+        case 1:
+          this.changeMatureMsg(redata.result);
+          break;
+        case 3:
+          this.changeDealMsg();
+          break;
+        default:
+          break;
+      }
+    },
+    websocketsend(agentData) {
+      //数据发送
+      this.websocket.send(agentData);
+    },
+    websocketclose() {
+      //关闭
+      console.log("connection closed");
+      this.websocket.close();
+    }
   }
 };
 </script>
@@ -71,6 +132,7 @@ export default {
 <style lang="scss" scoped>
 .aLayout {
   min-height: 100vh;
+  background: #e5e7ee;
 }
 
 .mainArea {
@@ -151,8 +213,20 @@ export default {
   height: 800px;
   width: 800px;
   border-radius: 50%;
-  background-color: rgba(24,144,255,0.2);;
+  background-color: rgba(24, 144, 255, 0.2);
   transform: translate(-50%, -50%);
   -webkit-transform: translate(-50%, -50%);
+}
+
+.sectorBackBottom {
+  position: absolute;
+  height: 400px;
+  width: 400px;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  background-color: rgba(24, 144, 255, 0.2);
+  transform: translate(50%, 50%);
+  -webkit-transform: translate(50%, 50%);
 }
 </style>

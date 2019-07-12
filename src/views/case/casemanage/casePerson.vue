@@ -1,13 +1,16 @@
 <template>
   <div class="casePerson">
-    <a-button
-      shape="circle"
-      size="large"
-      icon="plus"
-      type="primary"
-      class="addPersonBtn"
-      @click="handleAdd"
-    ></a-button>
+    <div v-if="disabled"></div>
+    <div v-else>
+      <a-button
+        shape="circle"
+        size="large"
+        icon="plus"
+        type="primary"
+        class="addPersonBtn"
+        @click="handleAdd"
+      ></a-button>
+    </div>
     <a-table
       bordered
       :dataSource="dataSource"
@@ -19,7 +22,7 @@
         <editable-cell :text="text" @change="onCellChange(record.key, 'name', $event)"/>
       </template>-->
       <template
-        v-for="col in ['name', 'idCard', 'driverCard','plateNbr','trafficType','responsibility','phoneNbr']"
+        v-for="col in ['name', 'idCard', 'driverCard','plateNbr','phoneNbr']"
         :slot="col"
         slot-scope="text, record"
       >
@@ -34,11 +37,39 @@
           <template v-else>{{text}}</template>
         </div>
       </template>
+      <template slot="trafficType" slot-scope="text, record">
+        <a-select
+          v-if="record.editable"
+          style="width:70px"
+          size="small"
+          :value="text"
+          :dropdownMatchSelectWidth="false"
+          @change="value => handleChange(value,record.key, 'trafficType')"
+        >
+          <a-select-option v-for="(name,value) in $getCodeByType('005')" :key="value">{{name}}</a-select-option>
+        </a-select>
+        <template v-else>{{$getCodeName('005',text)}}</template>
+      </template>
+      <template slot="responsibility" slot-scope="text, record">
+        <div>
+          <a-select
+            v-if="record.editable"
+            style="width:50px"
+            size="small"
+            :value="text"
+            :dropdownMatchSelectWidth="false"
+            @change="value=>handleChange(value,record.key, 'responsibility')"
+          >
+            <a-select-option v-for="(name,value) in $getCodeByType('006')" :key="value">{{name}}</a-select-option>
+          </a-select>
+          <template v-else>{{$getCodeName('006',text)}}</template>
+        </div>
+      </template>
       <template slot="operation" slot-scope="text, record">
         <div class="editable-row-operations">
           <span v-if="record.editable">
             <a @click="() => save(record.key)">保存</a>
-            <a-divider type="vertical"/>
+            <a-divider type="vertical" />
             <a-popconfirm title="确定取消?" @confirm="() => cancel(record.key)">
               <a>取消</a>
             </a-popconfirm>
@@ -46,7 +77,7 @@
           <span v-else>
             <a @click="() => edit(record.key)">修改</a>
           </span>
-          <a-divider type="vertical"/>
+          <a-divider type="vertical" />
           <a-popconfirm
             v-if="dataSource.length"
             title="确定删除?"
@@ -61,6 +92,8 @@
 </template>
 <script>
 // import EditableCell from "./editTableCell";
+import _ from "lodash";
+import uuid from "uuid";
 const columns = [
   {
     title: "姓名",
@@ -95,7 +128,7 @@ const columns = [
   {
     title: "责任",
     dataIndex: "responsibility",
-    width: "5%",
+    width: "8%",
     scopedSlots: { customRender: "responsibility" }
   },
   {
@@ -108,43 +141,41 @@ const columns = [
     title: "操作",
     dataIndex: "operation",
     scopedSlots: { customRender: "operation" },
-    width: "15%"
+    width: "17%"
   }
 ];
-// const dataSource = [
-//   {
-//     key: "0",
-//     name: "王晓丽",
-//     idCard: "341221199909154611",
-//     driverCard: "341221199909154611",
-//     plateNbr: "皖A12345",
-//     trafficType: "摩托车",
-//     responsibility: "主",
-//     phoneNbr: "15956997979"
-//   },
-//   {
-//     key: "1",
-//     name: "刘刚",
-//     idCard: "341221199909154611",
-//     driverCard: "341221199909154611",
-//     plateNbr: "皖A12345",
-//     trafficType: "摩托车",
-//     responsibility: "主",
-//     phoneNbr: "15956997979"
-//   }
-// ];
-const dataSource = [];
+
 export default {
   components: {
     // EditableCell
   },
+  props: {
+    record: {
+      type: Array,
+      required: true,
+      default: () => []
+    },
+    disabled: {
+      type: Boolean,
+      required: true,
+      default: false
+    }
+  },
   data() {
+    const dataSource = _.cloneDeep(this.record);
+    const count = dataSource.length || 0;
     this.cacheData = dataSource.map(item => ({ ...item }));
+    const columnsTemp = _.cloneDeep(columns);
+    if (
+      this.disabled &&
+      columnsTemp[columnsTemp.length - 1]["dataIndex"] == "operation"
+    )
+      columnsTemp.pop();
     return {
       dataSource,
-      columns,
+      columns: columnsTemp,
       editStatus: false, //标识在编辑状态
-      count: 2
+      count: count
     };
   },
   methods: {
@@ -158,7 +189,7 @@ export default {
     },
     onDelete(key) {
       const dataSource = [...this.dataSource];
-      this.editStatus = true;
+      this.editStatus = false;
       this.dataSource = dataSource.filter(item => item.key !== key);
     },
     handleAdd() {
@@ -167,8 +198,10 @@ export default {
         return;
       }
       const { count, dataSource } = this;
+      let uuid1 = uuid();
+      let key = uuid1.replace(/-/g, "");
       const newData = {
-        key: count,
+        key: key,
         name: "",
         idCard: "",
         driverCard: "",
@@ -191,6 +224,7 @@ export default {
       }
     },
     edit(key) {
+      debugger;
       const newData = [...this.dataSource];
       const target = newData.filter(item => key === item.key)[0];
       if (target) {
@@ -233,6 +267,9 @@ export default {
     getCasePerson() {
       console.log(this.dataSource, "casePerson");
       return this.dataSource;
+    },
+    resetFields() {
+      this.dataSource.length = 0;
     }
   }
 };

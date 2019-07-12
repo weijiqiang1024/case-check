@@ -97,7 +97,7 @@ export default {
         xs: { span: 24 },
         sm: { span: 13 }
       },
-      visible: this.addModalVisible, //modal框显示隐藏
+      visible: false, //modal框显示隐藏
       confirmLoading: false, //提交操作loading显示
       record: {}, //表单原始数据从父组件传来
       disabled: false, //用于区别修改和查看操作
